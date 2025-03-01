@@ -32,8 +32,6 @@ public class Splash extends JFrame {
         setVisible(true);
         setLocation(200,50);
         setName("Splash Screen");
-        setBackground(new java.awt.Color(44,44,44));
-        setForeground(new java.awt.Color(44,44,44));
 
         try {
             Thread.sleep(5000);
@@ -47,7 +45,7 @@ public class Splash extends JFrame {
     }
 
     public void setBgPic(){
-        ImageIcon iIcon= new ImageIcon(ClassLoader.getSystemResource("assets/splash_bg.jpg"));
+        ImageIcon iIcon= new ImageIcon(ClassLoader.getSystemResource("assets/bg_images/splash_bg.jpg"));
         Image imgResize=iIcon.getImage().getScaledInstance(1120,600,Image.SCALE_DEFAULT);
         ImageIcon iIcon1=new ImageIcon(imgResize);
         JLabel label=new JLabel(iIcon1);
