@@ -30,12 +30,13 @@ public class Splash extends JFrame {
         setSize(1120,600);
         setLayout(null);
         setVisible(true);
-        setLocation(200,50);
-        setName("Splash Screen");
+        setLocation(150,50);
+        setTitle("Dia Scient Health Care");
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(4000);
             setVisible(false);
+            new Login();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,7 +46,7 @@ public class Splash extends JFrame {
     }
 
     public void setBgPic(){
-        ImageIcon iIcon= new ImageIcon(ClassLoader.getSystemResource("assets/bg_images/splash_bg.jpg"));
+        ImageIcon iIcon= new ImageIcon(ClassLoader.getSystemResource("assets/bg_images/splash_bg.png"));
         Image imgResize=iIcon.getImage().getScaledInstance(1120,600,Image.SCALE_DEFAULT);
         ImageIcon iIcon1=new ImageIcon(imgResize);
         JLabel label=new JLabel(iIcon1);
