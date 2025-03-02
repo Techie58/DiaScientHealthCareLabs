@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 public class Main extends JFrame {
 
     Main(){
@@ -30,7 +31,7 @@ public class Main extends JFrame {
     }
 
     private void setBtn(){
-        JButton addPatient,viewPatient,removePatient;
+        JButton addPatient,viewPatient,removePatient,closeMain;
 
 
         addPatient= new JButton("ADD PATIENT");
@@ -44,6 +45,7 @@ public class Main extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                new AddPatient();
             }
         });
 
@@ -56,6 +58,7 @@ public class Main extends JFrame {
         viewPatient.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                new ViewPatient();
 
             }
         });
@@ -69,12 +72,24 @@ public class Main extends JFrame {
         removePatient.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                new RemovePatient();
 
             }
         });
 
 
 
+        closeMain = new JButton("CLOSE");
+        closeMain.setBounds(525,400,150,50);
+        closeMain.setBackground(Color.BLACK);
+        closeMain.setForeground(Color.white);
+        closeMain.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(20);
+            }
+        });
+        add(closeMain);
 
     }
 
