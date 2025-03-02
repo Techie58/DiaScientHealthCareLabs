@@ -11,6 +11,15 @@ public class Splash extends JFrame {
 
         setBgPic();
         setFram();
+        try {
+            Thread.sleep(4000);
+            setVisible(false);
+            new Login();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
 
     }
@@ -32,15 +41,6 @@ public class Splash extends JFrame {
         setVisible(true);
         setLocation(150,50);
         setTitle("Dia Scient Health Care");
-
-        try {
-            Thread.sleep(4000);
-            setVisible(false);
-            new Login();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
 
     }

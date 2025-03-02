@@ -11,6 +11,7 @@ public class Login extends JFrame implements ActionListener {
     JButton loginBtn,backBtn;
 
 
+
     Login(){
 
         setFram();
@@ -19,7 +20,7 @@ public class Login extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource()==loginBtn){
-            new Splash();
+            new Main();
 
         }else if(e.getSource()==backBtn) {
             System.exit(80);
@@ -76,7 +77,7 @@ public class Login extends JFrame implements ActionListener {
         //setting buttions
         setBTN();
     }
-    public void setBTN(){
+    private void setBTN(){
         loginBtn=new JButton("Login");
         loginBtn.setBounds(180,80,75,25);
         loginBtn.setBackground(Color.gray);
