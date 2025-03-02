@@ -4,10 +4,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 
 public class Login extends JFrame implements ActionListener {
 
-    JTextField userNameTF,passwordTF;
+    JTextField userNameTF;
+    JPasswordField passwordTF;
     JButton loginBtn,backBtn;
 
 
@@ -20,7 +22,27 @@ public class Login extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource()==loginBtn){
-            new Main();
+
+            try {
+
+                String loginUserName = userNameTF.getText();
+                String loginPassword = passwordTF.getText();
+                String query="SELECT * FROM login WHERE username = '"+loginUserName+"' and password = '"+loginPassword+"'";
+
+                dbConnection dbConnection=new dbConnection();
+                ResultSet resultSet= dbConnection.statement.executeQuery(query);
+                if (resultSet.next()){
+
+                    setVisible(false);
+                    new Main();
+
+                }else{
+                    JOptionPane.showMessageDialog(null,"Invalid username or password");
+                }
+
+            }catch (Exception exception){
+                exception.printStackTrace();
+            }
 
         }else if(e.getSource()==backBtn) {
             System.exit(80);
@@ -70,7 +92,7 @@ public class Login extends JFrame implements ActionListener {
         add(passwordLable);
 
         //Text Fied for Password
-        passwordTF=new JTextField();
+        passwordTF=new JPasswordField();
         passwordTF.setBounds(150,50,200,20);
         add(passwordTF);
 
