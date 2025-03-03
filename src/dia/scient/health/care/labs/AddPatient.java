@@ -5,6 +5,9 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -13,6 +16,8 @@ public class AddPatient extends JFrame {
     JTextField tfName,tfLabNum,tfAge,tfPatientID,tfPhoneNo,tfPayment;
     JComboBox cbTest,cbGender;
     JTextArea taDetails,taAddress;
+    String currentDate;
+
 
 
     AddPatient(){
@@ -60,6 +65,7 @@ public class AddPatient extends JFrame {
         tfLabNum=new JTextField();
         tfLabNum.setBounds(142,36,352,30);
         add(tfLabNum);
+        setIntRestriction(tfLabNum);
 
         //Total width of Lab_Number = 495
 
@@ -80,9 +86,9 @@ public class AddPatient extends JFrame {
         DateTimeLable.setBorder(border);
 
 
-        String currentDate=new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date());
+        currentDate=new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date());
         sysDateTimeLable=new JLabel(currentDate);
-        sysDateTimeLable.setBounds(346,68,149,30);
+        sysDateTimeLable.setBounds(346,68,147,30);
         sysDateTimeLable.setFont(new Font("Times New Roman",Font.BOLD,18));
         add(sysDateTimeLable);
         sysDateTimeLable.setBorder(border);
@@ -121,6 +127,7 @@ public class AddPatient extends JFrame {
 
         tfAge=new JTextField();
         tfAge.setBounds(344,132,150,30);
+        setIntRestriction(tfAge);
 
         add(tfAge);
 
@@ -148,6 +155,7 @@ public class AddPatient extends JFrame {
         tfPhoneNo=new JTextField();
         tfPhoneNo.setBounds(142,196,352,30);
         add(tfPhoneNo);
+        setIntRestriction(tfPhoneNo);
 
         // Total WIDTH of the Patient Phone No is = 495
 
@@ -189,6 +197,7 @@ public class AddPatient extends JFrame {
 
         tfPayment=new JTextField();
         tfPayment.setBounds(142,352,352,30);
+        setIntRestriction(tfPayment);
         add(tfPayment);
 
 
@@ -197,11 +206,47 @@ public class AddPatient extends JFrame {
 
 
     }
+
     private void setBtn(){
         JButton saveBtn, printBtn, closeBtn;
         saveBtn=new JButton("SAVE");
         saveBtn.setBounds(245,400,75,30);
         add(saveBtn);
+        saveBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String dataTime,patientName,gender,test,address,remarks,phoneNo;
+                    int labNum,patientID,age,payment;
+
+                    labNum= Integer.parseInt(tfLabNum.getText());
+                    patientID= Integer.parseInt(tfPatientID.getText());
+                    age= Integer.parseInt(tfAge.getText());
+                    phoneNo= tfPhoneNo.getText();
+                    payment= Integer.parseInt(tfPayment.getText());
+
+                    dataTime=currentDate;
+                    patientName=tfName.getText();
+                    gender=cbGender.getSelectedItem().toString();
+                    test=cbTest.getSelectedItem().toString();
+                    address=taAddress.getText();
+                    remarks=taDetails.getText();
+
+
+//                    Establishing Connection with Database
+                    dbConnection db=new dbConnection();
+                    String query="INSERT patient_details VALUES('"+labNum+"' , '"+patientID+"','"+dataTime+"','"+patientName+"','"+gender+"','"+age+"','"+test+"','"+phoneNo+"','"+address+"','"+remarks+"','"+payment+"')";
+
+                    db.statement.executeUpdate(query);
+                    JOptionPane.showMessageDialog(null,"Patient Details Saved");
+                    setVisible(false);
+                    new Main();
+
+                }catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
 
         printBtn=new JButton("PRINT");
         printBtn.setBounds(325,400,75,30);
@@ -217,6 +262,17 @@ public class AddPatient extends JFrame {
                 new Main();
                 setVisible(false);
 
+            }
+        });
+    }
+    private void setIntRestriction(JTextField tf){
+
+        tf.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (!Character.isDigit(e.getKeyChar()) || tf.getText().length() >=11) {
+                    e.consume();
+                }
             }
         });
     }
