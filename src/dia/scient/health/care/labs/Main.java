@@ -18,10 +18,10 @@ public class Main extends JFrame {
         new Main();
     }
 
-    private void setFram(){
+    public void setFram(){
 
         setLayout(null);
-        setSize(1200,600);
+        setSize(1000,500);
         setLocation(150,50);
         setTitle("Dia Scient Labs");
 
@@ -46,6 +46,7 @@ public class Main extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 new AddPatient();
+                setVisible(false);
             }
         });
 
@@ -59,7 +60,7 @@ public class Main extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new ViewPatient();
-
+                setVisible(false);
             }
         });
 
@@ -73,6 +74,7 @@ public class Main extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new RemovePatient();
+                setVisible(false);
 
             }
         });
