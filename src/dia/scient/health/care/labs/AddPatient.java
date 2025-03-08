@@ -1,5 +1,7 @@
 package dia.scient.health.care.labs;
 
+import com.mysql.cj.protocol.Resultset;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -7,7 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.sql.Connection;
+import java.sql.Array;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,46 +18,53 @@ public class AddPatient extends JFrame {
 
     JTextField tfName,tfLabNum,tfAge,tfPatientID,tfPhoneNo,tfPayment;
     JComboBox cbTest,cbGender;
-    JTextArea taDetails,taAddress;
+    JTextArea taRemarks,taAddress;
     String currentDate;
+    JScrollPane jScrollPane;
 
 
 
     AddPatient(){
 
+//        setLable("Add Patient");
+//        setBtn("SAVE",null);
+//        setFram("Add Patient");
 
-        setFram();
-
-
-    }
+            }
 
     public static void main(String[] args) {
 
         new AddPatient();
+        AddPatient addPatient=new AddPatient();
+
+        addPatient.setBtn("SAVE",null);
+        addPatient.setLable("Add Patient");
+        addPatient.setFram("Add Patient");
+
     }
 
-    private void setFram(){
+    public void setFram(String framTitle){
 
-        setLable();
-        setBtn();
+
+
 
         setSize(1000,500);
         setLayout(null);
-        setTitle("Add Patient");
+        setTitle(framTitle);
         setLocation(100,150);
 
         setVisible(true);
 
     }
 
-    private void setLable(){
+    public void setLable(String headingLable){
         JLabel addNewPatient,PaymentLable,LabNumLable,NameLable,AgeLable,GenderLable,PatientIDLable,TestLable,DateTimeLable,PhoneNoLable,AddressLable,Remarks,sysDateTimeLable;
 
         Border border = BorderFactory.createLineBorder(Color.BLACK);
 
-        addNewPatient=new JLabel("ADD NEW PATIENT");
-        addNewPatient.setBounds(100,0,300,50);
-        addNewPatient.setFont(new Font("Times New Roman",Font.BOLD,25));
+        addNewPatient=new JLabel(headingLable);
+        addNewPatient.setBounds(100,0,400,40);
+        addNewPatient.setFont(new Font("Times New Roman",Font.BOLD,35));
         add(addNewPatient);
 
         LabNumLable=new JLabel("Lab Number");
@@ -74,10 +84,26 @@ public class AddPatient extends JFrame {
         add(PatientIDLable);
         PatientIDLable.setBorder(border);
 
-        tfPatientID=new JTextField("01");
-        tfPatientID.setBounds(142,68,100,30);
-        tfPatientID.setEditable(false);
-        add(tfPatientID);
+        try {
+            dbConnection dbConnection = new dbConnection();
+            ResultSet resultSet=dbConnection.statement.executeQuery("SELECT patient_id FROM patient_details");
+            String patientIds="";
+            while (resultSet.next()) {
+                patientIds =resultSet.getString("patient_id");
+
+            }
+            int currentID=Integer.parseInt(patientIds)+1;
+            tfPatientID=new JTextField(String.valueOf(currentID));
+            tfPatientID.setBounds(142,68,100,30);
+            add(tfPatientID);
+            tfPatientID.setEditable(false);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            tfPatientID=new JTextField(e.toString());
+            tfPatientID.setBounds(142,68,100,30);
+            add(tfPatientID);
+        }
 
 
         DateTimeLable=new JLabel("Date & Time");
@@ -172,6 +198,10 @@ public class AddPatient extends JFrame {
         taAddress.setBounds(142,228,352,60);
         add(taAddress);
 
+        jScrollPane=new JScrollPane(taAddress);
+        jScrollPane.setBounds(142,228,352,60);
+        add(jScrollPane);
+
         // Total WIDTH of the Patient Address is = 495
 
 
@@ -180,12 +210,12 @@ public class AddPatient extends JFrame {
         add(Remarks);
         Remarks.setBorder(border);
 
-        taDetails=new JTextArea(5,20);
-        taDetails.setLineWrap(true); // Wrap text
-        taDetails.setWrapStyleWord(true);
-        taDetails.setBorder(BorderFactory.createLineBorder(Color.gray)); // Add border
-        taDetails.setBounds(142,290,352,60);
-        add(taDetails);
+        taRemarks=new JTextArea(5,20);
+        taRemarks.setLineWrap(true); // Wrap text
+        taRemarks.setWrapStyleWord(true);
+        taRemarks.setBorder(BorderFactory.createLineBorder(Color.gray)); // Add border
+        taRemarks.setBounds(142,290,352,60);
+        add(taRemarks);
 
         // Total WIDTH of the Patient Remarks is = 495
 
@@ -207,73 +237,199 @@ public class AddPatient extends JFrame {
 
     }
 
-    private void setBtn(){
-        JButton saveBtn, printBtn, closeBtn;
-        saveBtn=new JButton("SAVE");
-        saveBtn.setBounds(245,400,75,30);
-        add(saveBtn);
-        saveBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    String dataTime,patientName,gender,test,address,remarks,phoneNo;
-                    int labNum,patientID,age,payment;
+    public void setBtn(String btnName,Integer lab_number ){
 
-                    labNum= Integer.parseInt(tfLabNum.getText());
-                    patientID= Integer.parseInt(tfPatientID.getText());
-                    age= Integer.parseInt(tfAge.getText());
-                    phoneNo= tfPhoneNo.getText();
-                    payment= Integer.parseInt(tfPayment.getText());
 
-                    dataTime=currentDate;
-                    patientName=tfName.getText();
-                    gender=cbGender.getSelectedItem().toString();
-                    test=cbTest.getSelectedItem().toString();
-                    address=taAddress.getText();
-                    remarks=taDetails.getText();
+
+
+        if (lab_number==null){
+
+
+                JButton saveBtn, printBtn, closeBtn;
+            saveBtn=new JButton(btnName);
+            saveBtn.setBounds(235,400,85,30);
+            add(saveBtn);
+            saveBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        String dataTime,patientName,gender,test,address,remarks,phoneNo;
+                        int labNum,age,payment;
+
+                        labNum= Integer.parseInt(tfLabNum.getText());
+                        age= Integer.parseInt(tfAge.getText());
+                        phoneNo= tfPhoneNo.getText();
+                        payment= Integer.parseInt(tfPayment.getText());
+
+                        dataTime=currentDate;
+                        patientName=tfName.getText();
+                        gender=cbGender.getSelectedItem().toString();
+                        test=cbTest.getSelectedItem().toString();
+                        address=taAddress.getText();
+                        remarks=taRemarks.getText();
+
+                        if (remarks.isEmpty()){
+                            remarks="";
+                        }
 
 
 //                    Establishing Connection with Database
-                    dbConnection db=new dbConnection();
-                    String query="INSERT patient_details VALUES('"+labNum+"' , '"+patientID+"','"+dataTime+"','"+patientName+"','"+gender+"','"+age+"','"+test+"','"+phoneNo+"','"+address+"','"+remarks+"','"+payment+"')";
+                        dbConnection db=new dbConnection();
+                        String saveBtnQuery="INSERT INTO patient_details(lab_number,date_time,patient_name,gender,age,test,phone_no,address,remarks,payment) VALUES('"+labNum+"' , '"+dataTime+"','"+patientName+"','"+gender+"','"+age+"','"+test+"','"+phoneNo+"','"+address+"','"+remarks+"','"+payment+"')";
+                        db.statement.executeUpdate(saveBtnQuery);
+                        JOptionPane.showMessageDialog(null,"Patient Details Saved");
+                        setVisible(false);
+                        new Main();
 
-                    db.statement.executeUpdate(query);
-                    JOptionPane.showMessageDialog(null,"Patient Details Saved");
-                    setVisible(false);
+                    }catch (Exception e1) {
+                        JOptionPane.showMessageDialog(null,"Please Fill All the Details","Missing Details",JOptionPane.ERROR_MESSAGE);
+
+
+                        e1.printStackTrace();
+                    }
+                }
+            });
+
+            printBtn=new JButton("PRINT");
+            printBtn.setBounds(325,400,75,30);
+            add(printBtn);
+
+            closeBtn=new JButton("BACK");
+            closeBtn.setBounds(405,400,75,30);
+            add(closeBtn);
+
+            closeBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
                     new Main();
+                    setVisible(false);
 
-                }catch (Exception e1) {
-                    e1.printStackTrace();
                 }
+            });
+
+        }
+
+        else {
+
+//            Setting Existing Data into the Fields
+            try {
+
+                dbConnection db=new dbConnection();
+                String query="SELECT * FROM patient_details where lab_number = '"+lab_number+"'";
+                ResultSet resultset = db.statement.executeQuery(query);
+                while (resultset.next()){
+
+                    tfLabNum.setText(Integer.toString(resultset.getInt("lab_number")));
+                    tfPatientID.setText(Integer.toString(resultset.getInt("patient_id")));
+                    tfName.setText(resultset.getString("patient_name"));
+                    tfAge.setText(Integer.toString(resultset.getInt("age")));
+                    tfPhoneNo.setText(resultset.getString("phone_no"));
+                    tfPayment.setText(Integer.toString(resultset.getInt("payment")));
+                    taAddress.setText(resultset.getString("address"));
+                    taRemarks.setText(resultset.getString("remarks"));
+                    cbGender.setSelectedItem(resultset.getString("gender"));
+                    cbTest.setSelectedItem(resultset.getString("test"));
+
+                }}catch (Exception e){
+                e.printStackTrace();
             }
-        });
 
-        printBtn=new JButton("PRINT");
-        printBtn.setBounds(325,400,75,30);
-        add(printBtn);
 
-        closeBtn=new JButton("CLOSE");
-        closeBtn.setBounds(405,400,75,30);
-        add(closeBtn);
 
-        closeBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Main();
-                setVisible(false);
+            JButton updateBtn, closeBtn;
+            updateBtn=new JButton(btnName);
+            updateBtn.setBounds(200,400,140,30);
+            add(updateBtn);
 
-            }
-        });
-    }
-    private void setIntRestriction(JTextField tf){
+            updateBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
 
-        tf.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (!Character.isDigit(e.getKeyChar()) || tf.getText().length() >=11) {
-                    e.consume();
+
+//                    Establishing Connection with Database
+
+                        dbConnection db=new dbConnection();
+                        String dataTime,patientName,gender,test,address,remarks,phoneNo;
+                        int labNum,patientID,age,payment;
+
+                        labNum= Integer.parseInt(tfLabNum.getText());
+                        patientID= Integer.parseInt(tfPatientID.getText());
+                        age= Integer.parseInt(tfAge.getText());
+                        phoneNo= tfPhoneNo.getText();
+                        payment= Integer.parseInt(tfPayment.getText());
+
+                        dataTime=currentDate;
+                        patientName=tfName.getText();
+                        gender=cbGender.getSelectedItem().toString();
+                        test=cbTest.getSelectedItem().toString();
+                        address=taAddress.getText();
+                        remarks=taRemarks.getText();
+                        if (remarks.isEmpty()){
+                            remarks="";
+                        }
+
+
+                        String updateBtnQuery = "UPDATE patient_details SET " +
+                                "date_time = '" + dataTime + "', " +
+                                "patient_name = '" + patientName + "', " +
+                                "gender = '" + gender + "', " +
+                                "age = '" + age + "', " +
+                                "test = '" + test + "', " +
+                                "phone_no = '" + phoneNo + "', " +
+                                "address = '" + address + "', " +
+                                "remarks = '" + remarks + "', " +
+                                "payment = '" + payment + "' " +
+                                "WHERE lab_number = '" + labNum + "'";
+
+                        db.statement.executeUpdate(updateBtnQuery);
+
+
+                        JOptionPane.showMessageDialog(null,"Patient Details is Updated");
+                        setVisible(false);
+                        new Main();
+
+                    }catch (Exception e1) {
+                        JOptionPane.showMessageDialog(null,"Please Fill All the Details","Missing Details",JOptionPane.ERROR_MESSAGE);
+                        e1.printStackTrace();
+                    }
                 }
-            }
-        });
-    }
+            });
+
+
+            closeBtn=new JButton("BACK");
+            closeBtn.setBounds(350,400,140,30);
+            add(closeBtn);
+
+            closeBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new Main();
+                    setVisible(false);
+
+                }
+            });
+
+        }
+
+
+        }
+        private void setIntRestriction(JTextField tf) {
+            tf.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyTyped(KeyEvent e) {
+                    char c = e.getKeyChar();
+
+                    // Allow only digits, backspace, and delete
+                    if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE && c != KeyEvent.VK_DELETE) {
+                        e.consume(); // Ignore the key event
+                    }
+
+                    // Limit input length to 11 characters
+                    if (tf.getText().length() >= 11) {
+                        e.consume();
+                    }
+                }
+            });
+        }
 }

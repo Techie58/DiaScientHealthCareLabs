@@ -115,7 +115,7 @@ public class Login extends JFrame implements ActionListener {
         add(backBtn);
     }
 
-    public void setBgImg(){
+    private void setBgImg(){
         ImageIcon msLogo= new ImageIcon(ClassLoader.getSystemResource("assets/logos/microscop.png"));
         Image reSizeMsImg= msLogo.getImage().getScaledInstance(200,220,Image.SCALE_DEFAULT);
         ImageIcon msLogoReGet=new ImageIcon(reSizeMsImg);
