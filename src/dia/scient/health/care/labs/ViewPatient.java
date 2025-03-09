@@ -62,7 +62,7 @@ public class ViewPatient extends JFrame implements ActionListener {
             ResultSet resultSet=dbConnection.statement.executeQuery("SELECT * FROM patient_details");
 
             while(resultSet.next()){
-                searchChoice.add(resultSet.getString("lab_number"));
+                searchChoice.add(resultSet.getString("patient_id"));
             }
         }catch (Exception exception){
             exception.printStackTrace();
@@ -116,7 +116,7 @@ public class ViewPatient extends JFrame implements ActionListener {
         if(e.getSource()==searchBtn){
             try {
                 dbConnection dbConnection=new dbConnection();
-                ResultSet resultSet=dbConnection.statement.executeQuery("SELECT * FROM patient_details WHERE lab_number = '"+searchChoice.getSelectedItem()+"'");
+                ResultSet resultSet=dbConnection.statement.executeQuery("SELECT * FROM patient_details WHERE patient_id = '"+searchChoice.getSelectedItem()+"'");
                 jTable.setModel(DbUtils.resultSetToTableModel(resultSet));
 
             }catch (Exception exception){

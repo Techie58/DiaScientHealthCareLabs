@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="DiaScientHealthCareLabs:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/DiaScientHealthCareLabs_jar</output-path>
+    <root id="archive" name="DiaScientHealthCareLabs.jar">
+      <element id="module-output" name="DiaScientHealthCareLabs" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/src/assets/files/mysql-connector-java-8.0.28.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/src/assets/files/ResultSet2xml.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

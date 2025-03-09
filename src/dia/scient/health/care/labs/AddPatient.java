@@ -22,6 +22,7 @@ public class AddPatient extends JFrame {
     String currentDate;
     JScrollPane jScrollPane;
 
+    private int patientID;
 
 
     AddPatient(){
@@ -77,7 +78,9 @@ public class AddPatient extends JFrame {
         add(tfLabNum);
         setIntRestriction(tfLabNum);
 
+
         //Total width of Lab_Number = 495
+
 
         PatientIDLable=new JLabel("Patient ID");
         PatientIDLable.setBounds(10,68,130,30);
@@ -86,24 +89,35 @@ public class AddPatient extends JFrame {
 
         try {
             dbConnection dbConnection = new dbConnection();
-            ResultSet resultSet=dbConnection.statement.executeQuery("SELECT patient_id FROM patient_details");
-            String patientIds="";
-            while (resultSet.next()) {
-                patientIds =resultSet.getString("patient_id");
 
+            // Check if the table is empty
+            ResultSet resultSet = dbConnection.statement.executeQuery("SELECT COUNT(*) AS count FROM patient_details");
+
+            int currentID = 1; // Default ID
+
+            if (resultSet.next() && resultSet.getInt("count") > 0) {
+                // Get the last used ID
+                ResultSet rsMax = dbConnection.statement.executeQuery("SELECT MAX(patient_id) AS max_id FROM patient_details");
+                if (rsMax.next()) {
+                    currentID = rsMax.getInt("max_id") + 1;
+                }
+            } else {
+                // Reset AUTO_INCREMENT when the table is empty
+                dbConnection.statement.executeUpdate("ALTER TABLE patient_details AUTO_INCREMENT = 1");
             }
-            int currentID=Integer.parseInt(patientIds)+1;
-            tfPatientID=new JTextField(String.valueOf(currentID));
-            tfPatientID.setBounds(142,68,100,30);
+
+            tfPatientID = new JTextField(String.valueOf(currentID));
+            tfPatientID.setBounds(142, 68, 100, 30);
             add(tfPatientID);
             tfPatientID.setEditable(false);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            tfPatientID=new JTextField(e.toString());
-            tfPatientID.setBounds(142,68,100,30);
+            tfPatientID = new JTextField("1");
+            tfPatientID.setBounds(142, 68, 100, 30);
             add(tfPatientID);
         }
+
 
 
         DateTimeLable=new JLabel("Date & Time");
@@ -237,12 +251,12 @@ public class AddPatient extends JFrame {
 
     }
 
-    public void setBtn(String btnName,Integer lab_number ){
+    public void setBtn(String btnName,Integer patientID ){
 
 
 
 
-        if (lab_number==null){
+        if (patientID==null){
 
 
                 JButton saveBtn, printBtn, closeBtn;
@@ -275,7 +289,8 @@ public class AddPatient extends JFrame {
 
 //                    Establishing Connection with Database
                         dbConnection db=new dbConnection();
-                        String saveBtnQuery="INSERT INTO patient_details(lab_number,date_time,patient_name,gender,age,test,phone_no,address,remarks,payment) VALUES('"+labNum+"' , '"+dataTime+"','"+patientName+"','"+gender+"','"+age+"','"+test+"','"+phoneNo+"','"+address+"','"+remarks+"','"+payment+"')";
+                        String saveBtnQuery="INSERT INTO patient_details(lab_number,date_time,patient_name,gender,age,test,phone_no,address,remarks,payment) " +
+                                            "VALUES('"+labNum+"' , '"+dataTime+"','"+patientName+"','"+gender+"','"+age+"','"+test+"','"+phoneNo+"','"+address+"','"+remarks+"','"+payment+"')";
                         db.statement.executeUpdate(saveBtnQuery);
                         JOptionPane.showMessageDialog(null,"Patient Details Saved");
                         setVisible(false);
@@ -315,7 +330,7 @@ public class AddPatient extends JFrame {
             try {
 
                 dbConnection db=new dbConnection();
-                String query="SELECT * FROM patient_details where lab_number = '"+lab_number+"'";
+                String query="SELECT * FROM patient_details where patient_id = '"+patientID+"'";
                 ResultSet resultset = db.statement.executeQuery(query);
                 while (resultset.next()){
 
@@ -371,6 +386,7 @@ public class AddPatient extends JFrame {
 
 
                         String updateBtnQuery = "UPDATE patient_details SET " +
+                                "lab_number = '" + labNum + "', " +
                                 "date_time = '" + dataTime + "', " +
                                 "patient_name = '" + patientName + "', " +
                                 "gender = '" + gender + "', " +
@@ -380,14 +396,14 @@ public class AddPatient extends JFrame {
                                 "address = '" + address + "', " +
                                 "remarks = '" + remarks + "', " +
                                 "payment = '" + payment + "' " +
-                                "WHERE lab_number = '" + labNum + "'";
+                                "WHERE patient_id = '" + patientID + "'";
 
                         db.statement.executeUpdate(updateBtnQuery);
 
 
                         JOptionPane.showMessageDialog(null,"Patient Details is Updated");
                         setVisible(false);
-                        new Main();
+                        new ViewPatient();
 
                     }catch (Exception e1) {
                         JOptionPane.showMessageDialog(null,"Please Fill All the Details","Missing Details",JOptionPane.ERROR_MESSAGE);

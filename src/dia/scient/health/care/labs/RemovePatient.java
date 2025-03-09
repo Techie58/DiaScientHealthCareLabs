@@ -116,11 +116,12 @@ public class RemovePatient extends JFrame implements ActionListener {
                 db.statement.executeUpdate(query);
                 JOptionPane.showMessageDialog(null, "Patient Details Deleted!");
                 setVisible(false);
-                new Main();
+                new RemovePatient();
 
 
             }catch (Exception exception){
                 exception.printStackTrace();
+                JOptionPane.showMessageDialog(null,"There is No Any Patient","No Record",JOptionPane.ERROR_MESSAGE);
             }
         }else {
             setVisible(false);

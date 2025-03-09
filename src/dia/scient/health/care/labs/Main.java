@@ -21,11 +21,16 @@ public class Main extends JFrame {
 
     public void setFram(){
 
+        Image titleBarImg=Toolkit.getDefaultToolkit().getImage("assets/logos/logo.png");
+        setIconImage(titleBarImg);
+
         setLayout(null);
         setSize(1000,500);
         setLocation(150,50);
         setTitle("Dia Scient Labs");
         getContentPane().setBackground(Color.WHITE);
+
+
 
         setVisible(true);
 
