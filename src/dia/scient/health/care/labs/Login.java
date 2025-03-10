@@ -4,7 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLData;
 
 public class Login extends JFrame implements ActionListener {
 
@@ -42,6 +44,7 @@ public class Login extends JFrame implements ActionListener {
 
             }catch (Exception exception){
                 exception.printStackTrace();
+                JOptionPane.showMessageDialog(null,"No Database Connection Found","Error",JOptionPane.ERROR_MESSAGE);
             }
 
         }else if(e.getSource()==backBtn) {

@@ -17,6 +17,8 @@ import java.util.Date;
 public class AddPatient extends JFrame {
 
     JTextField tfName,tfLabNum,tfAge,tfPatientID,tfPhoneNo,tfPayment;
+    JLabel addNewPatient,PaymentLable,LabNumLable,NameLable,AgeLable,GenderLable,PatientIDLable,TestLable,DateTimeLable,PhoneNoLable,AddressLable,Remarks,sysDateTimeLable;
+
     JComboBox cbTest,cbGender;
     JTextArea taRemarks,taAddress;
     String currentDate;
@@ -25,13 +27,7 @@ public class AddPatient extends JFrame {
     private int patientID;
 
 
-    AddPatient(){
-
-//        setLable("Add Patient");
-//        setBtn("SAVE",null);
-//        setFram("Add Patient");
-
-            }
+    AddPatient(){ }
 
     public static void main(String[] args) {
 
@@ -44,7 +40,8 @@ public class AddPatient extends JFrame {
 
     }
 
-    public void setFram(String framTitle){
+    public void setFram(String framTitle)
+    {
 
 
 
@@ -59,7 +56,6 @@ public class AddPatient extends JFrame {
     }
 
     public void setLable(String headingLable){
-        JLabel addNewPatient,PaymentLable,LabNumLable,NameLable,AgeLable,GenderLable,PatientIDLable,TestLable,DateTimeLable,PhoneNoLable,AddressLable,Remarks,sysDateTimeLable;
 
         Border border = BorderFactory.createLineBorder(Color.BLACK);
 
@@ -77,6 +73,7 @@ public class AddPatient extends JFrame {
         tfLabNum.setBounds(142,36,352,30);
         add(tfLabNum);
         setIntRestriction(tfLabNum);
+
 
 
         //Total width of Lab_Number = 495
@@ -239,6 +236,8 @@ public class AddPatient extends JFrame {
         add(PaymentLable);
         PaymentLable.setBorder(border);
 
+
+
         tfPayment=new JTextField();
         tfPayment.setBounds(142,352,352,30);
         setIntRestriction(tfPayment);
@@ -258,56 +257,32 @@ public class AddPatient extends JFrame {
 
         if (patientID==null){
 
+            JButton saveBtn, printBtn, closeBtn;
 
-                JButton saveBtn, printBtn, closeBtn;
             saveBtn=new JButton(btnName);
             saveBtn.setBounds(235,400,85,30);
             add(saveBtn);
             saveBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    try {
-                        String dataTime,patientName,gender,test,address,remarks,phoneNo;
-                        int labNum,age,payment;
 
-                        labNum= Integer.parseInt(tfLabNum.getText());
-                        age= Integer.parseInt(tfAge.getText());
-                        phoneNo= tfPhoneNo.getText();
-                        payment= Integer.parseInt(tfPayment.getText());
+                    insertDataIntoDB();
 
-                        dataTime=currentDate;
-                        patientName=tfName.getText();
-                        gender=cbGender.getSelectedItem().toString();
-                        test=cbTest.getSelectedItem().toString();
-                        address=taAddress.getText();
-                        remarks=taRemarks.getText();
-
-                        if (remarks.isEmpty()){
-                            remarks="";
-                        }
-
-
-//                    Establishing Connection with Database
-                        dbConnection db=new dbConnection();
-                        String saveBtnQuery="INSERT INTO patient_details(lab_number,date_time,patient_name,gender,age,test,phone_no,address,remarks,payment) " +
-                                            "VALUES('"+labNum+"' , '"+dataTime+"','"+patientName+"','"+gender+"','"+age+"','"+test+"','"+phoneNo+"','"+address+"','"+remarks+"','"+payment+"')";
-                        db.statement.executeUpdate(saveBtnQuery);
-                        JOptionPane.showMessageDialog(null,"Patient Details Saved");
-                        setVisible(false);
-                        new Main();
-
-                    }catch (Exception e1) {
-                        JOptionPane.showMessageDialog(null,"Please Fill All the Details","Missing Details",JOptionPane.ERROR_MESSAGE);
-
-
-                        e1.printStackTrace();
-                    }
                 }
             });
+
+
 
             printBtn=new JButton("PRINT");
             printBtn.setBounds(325,400,75,30);
             add(printBtn);
+            printBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    printData();
+
+                }
+            });
 
             closeBtn=new JButton("BACK");
             closeBtn.setBounds(405,400,75,30);
@@ -448,4 +423,117 @@ public class AddPatient extends JFrame {
                 }
             });
         }
-}
+
+    private boolean setNotEmptyIntValidation(JTextField textField, JLabel jLabel) {
+        if (textField.getText().trim().isEmpty()) {
+            jLabel.setForeground(Color.RED);
+            return false; // Validation failed
+        } else {
+            jLabel.setForeground(Color.BLACK);
+            return true; // Validation passed
+        }
+    }
+
+
+    private boolean setNotEmptyStringValidation(JTextField textField, JLabel jLabel) {
+        if (textField.getText().trim().isEmpty()) {
+            jLabel.setForeground(Color.RED);
+            return false; // Validation failed
+        } else {
+            jLabel.setForeground(Color.BLACK);
+            return true; // Validation passed
+        }
+    }
+    private void insertDataIntoDB(){
+
+        try {
+            // Validate Required Fields
+            boolean isValid = true;
+            isValid &= setNotEmptyIntValidation(tfLabNum, LabNumLable);
+            isValid &= setNotEmptyStringValidation(tfName, NameLable);
+            isValid &= setNotEmptyIntValidation(tfAge, AgeLable);
+            isValid &= setNotEmptyIntValidation(tfPayment, PaymentLable);
+            isValid &= setNotEmptyStringValidation(tfPhoneNo, PhoneNoLable);
+
+            if (!isValid) {
+                JOptionPane.showMessageDialog(null, "Please fill all the required fields!", "Missing Details", JOptionPane.ERROR_MESSAGE);
+                return; // Stop execution if validation fails
+            }
+
+            // Extracting Data
+            String dataTime = currentDate;
+            String patientName = tfName.getText();
+            String gender = cbGender.getSelectedItem().toString();
+            String test = cbTest.getSelectedItem().toString();
+            String address = taAddress.getText();
+            String remarks = taRemarks.getText();
+            if (remarks.isEmpty()) remarks = "";
+
+            int labNum = Integer.parseInt(tfLabNum.getText());
+            int age = Integer.parseInt(tfAge.getText());
+            String phoneNo = tfPhoneNo.getText();
+            int payment = Integer.parseInt(tfPayment.getText());
+
+            // Database Insertion
+            dbConnection db = new dbConnection();
+            String saveBtnQuery = "INSERT INTO patient_details(lab_number, date_time, patient_name, gender, age, test, phone_no, address, remarks, payment) " +
+                    "VALUES('" + labNum + "', '" + dataTime + "', '" + patientName + "', '" + gender + "', '" + age + "', '" + test + "', '" + phoneNo + "', '" + address + "', '" + remarks + "', '" + payment + "')";
+
+            db.statement.executeUpdate(saveBtnQuery);
+            JOptionPane.showMessageDialog(null, "Patient Details Saved");
+            setVisible(false);
+            new Main();
+
+        } catch (Exception e1) {
+            JOptionPane.showMessageDialog(null, "Error saving patient details.", "Error", JOptionPane.ERROR_MESSAGE);
+            e1.printStackTrace();
+        }
+    }
+    private void printData(){
+
+            try {
+                // Validate Required Fields
+                boolean isValid = true;
+                isValid &= setNotEmptyIntValidation(tfLabNum, LabNumLable);
+                isValid &= setNotEmptyStringValidation(tfName, NameLable);
+                isValid &= setNotEmptyIntValidation(tfAge, AgeLable);
+                isValid &= setNotEmptyIntValidation(tfPayment, PaymentLable);
+                isValid &= setNotEmptyStringValidation(tfPhoneNo, PhoneNoLable);
+
+                if (!isValid) {
+                    JOptionPane.showMessageDialog(null, "Please fill all the required fields!", "Missing Details", JOptionPane.ERROR_MESSAGE);
+                    return; // Stop execution if validation fails
+                }
+
+                // Extracting Data
+                String dataTime = currentDate;
+                String patientName = tfName.getText();
+                String gender = cbGender.getSelectedItem().toString();
+                String test = cbTest.getSelectedItem().toString();
+                String address = taAddress.getText();
+                String remarks = taRemarks.getText();
+                if (remarks.isEmpty()) remarks = "";
+
+                int labNum = Integer.parseInt(tfLabNum.getText());
+                int age = Integer.parseInt(tfAge.getText());
+                String phoneNo = tfPhoneNo.getText();
+                int payment = Integer.parseInt(tfPayment.getText());
+
+                // Database Insertion
+                dbConnection db = new dbConnection();
+                String saveBtnQuery = "INSERT INTO patient_details(lab_number, date_time, patient_name, gender, age, test, phone_no, address, remarks, payment) " +
+                        "VALUES('" + labNum + "', '" + dataTime + "', '" + patientName + "', '" + gender + "', '" + age + "', '" + test + "', '" + phoneNo + "', '" + address + "', '" + remarks + "', '" + payment + "')";
+
+                db.statement.executeUpdate(saveBtnQuery);
+                new Print();
+                setVisible(false);
+
+
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(null, "Error saving patient details.", "Error", JOptionPane.ERROR_MESSAGE);
+                e1.printStackTrace();
+            }
+        }
+    }
+
+
