@@ -1,8 +1,6 @@
 package dia.scient.health.care.labs;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,17 +13,18 @@ import java.sql.ResultSet;
 public class Print extends JFrame implements Printable {
     private JScrollPane scrollPane;
     private JPanel jPanel;
-    private JLabel pNameLabel,pIdLabel,pAgeLabel,pGenderLabel,pDateLabel,pLabNo,pRegDateLabel,pTestLabel;
+    private JLabel pNameLabel,pIdLabel,pAgeLabel,pGenderLabel,pDateLabel,pLabNo,pRegDateLabel;
     private dbConnection databaseConnection;
     private int YvalueOfLabel,labelHeight,secondRawYValue,thirdRawYValue;
 
     public Print(String patientID) {
         labelHeight=30;
-        YvalueOfLabel=440;
+        YvalueOfLabel=500;
 
         setPrintBtn();
         setFram();
         getDatabase(patientID);
+        ReportDetails reportDetails=new ReportDetails(patientID,jPanel);
     }
 
     public static void main(String[] args) {
@@ -53,15 +52,14 @@ public class Print extends JFrame implements Printable {
         jPanel = new JPanel();
         jPanel.setLayout(null);  // Using null layout for absolute positioning
         jPanel.setPreferredSize(new Dimension(1240, 1754)); // Set preferred size to make JScrollPane work
-        jPanel.setBorder(new EmptyBorder(20, 50, 20, 30)); // Top, Left, Bottom, Right padding
 
         jPanel.setBackground(Color.WHITE);
 
 
         settingHeader();
         setUserDetailLabels();
+        settingFooter();
 
-        setReportDetail();
 
 
         // Create a JScrollPane and add the JPanel to it
@@ -79,7 +77,7 @@ public class Print extends JFrame implements Printable {
     private JLabel setLabel(String labelText,int x, int y, int width, int height){
         JLabel jLabel = new JLabel(labelText);
         jLabel.setBounds(x, y, width,height);
-        jLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        jLabel.setFont(new Font("Arial", Font.BOLD, 20));
 
 
         jPanel.add(jLabel);
@@ -90,7 +88,7 @@ public class Print extends JFrame implements Printable {
     private JLabel setUserDataLabel(String labelText,int x, int y, int width, int height){
         JLabel jLabel = new JLabel(labelText);
         jLabel.setBounds(x, y, width,height);
-        jLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        jLabel.setFont(new Font("Arial", Font.PLAIN, 20));
 
 
         jPanel.add(jLabel);
@@ -119,55 +117,66 @@ public class Print extends JFrame implements Printable {
                 + "<b>www.diascient.com</b>"
                 + "<b>UAN: +92-304-333-3579</b>"
                 + "</html>";
-
-        setImg("assets/bg_images/headerImg.png",2,202,1240,200);
-
-
-//        JLabel headerAddressLabel=setLabel(adress,950,205, 310,200);
+        //        JLabel headerAddressLabel=setLabel(adress,950,205, 310,200);
 //        headerAddressLabel.setHorizontalAlignment(SwingConstants.LEFT); // Align text to left
 //        headerAddressLabel.setVerticalAlignment(SwingConstants.TOP);
 //        headerAddressLabel.setFont(new Font("Arial", Font.BOLD, 18));
 //        jPanel.add(headerAddressLabel);
+//        setLabel("<html><hr width='1800px' size='2' color='black'></html>",10,lineYValue,1600,lineHeight);
+
+
+
+        setImg("assets/bg_images/headerImg1.png",70,202,1240,260);
+
+
         int lineHeight=5;
-        int lineYValue=405;
+        int lineYValue=465;
         int lineWidth=1500;
 
-        setLabel("<html><hr width='1800px' size='2' color='black'></html>",10,lineYValue,1600,lineHeight);
-        setLabel("<html><hr width='1800px' size='1' color='black'></html>",10,lineYValue+15,1500,lineHeight);
-        setLabel("<html><hr width='1800px' size='5' color='black'></html>",10,lineYValue+130,1500,lineHeight);
+
+        setLabel("<html><hr width='1800px' size='1' color='black'></html>",70,lineYValue+15,1500,lineHeight);
+        setLabel("<html><hr width='1800px' size='5' color='black'></html>",70,lineYValue+160,1500,lineHeight);
 
 
     }
+    private void settingFooter(){
+        setImg("assets/bg_images/footerImg.png",60,1435,1240,320);
+
+    }
     private void setUserDetailLabels(){
-        int width=100;
-        setLabel("Name: ",      15,YvalueOfLabel,width,labelHeight);
-        setLabel("Patient ID: ", 350,YvalueOfLabel,width,labelHeight);
-        setLabel("Lab Refferal: ",750,YvalueOfLabel,width,labelHeight);
+        int width=130,firstColumnX=70,middleColumnX=520,lastColumnX=930;
 
-        secondRawYValue=YvalueOfLabel+labelHeight;
-        setLabel("Age: ",      15,secondRawYValue,width,labelHeight);
-        setLabel("Gender: ", 350,secondRawYValue,width,labelHeight);
-        setLabel("Date: ",750,secondRawYValue,width,labelHeight);
+        setLabel("Name: ",      firstColumnX,YvalueOfLabel,width,labelHeight);
+        setLabel("Patient ID: ", middleColumnX,YvalueOfLabel,width,labelHeight);
+        setLabel("Lab Refferal: ",lastColumnX,YvalueOfLabel,width,labelHeight);
 
-        thirdRawYValue=secondRawYValue+labelHeight;
-        setLabel("Referred By: ",      15,thirdRawYValue,width,labelHeight);
-        setLabel("Registration Date: ", 350,thirdRawYValue,130,labelHeight);
-        setLabel("Lab No: ",750,thirdRawYValue,width,labelHeight);
+        secondRawYValue=YvalueOfLabel+labelHeight+10;
+        setLabel("Age: ",      firstColumnX,secondRawYValue,width,labelHeight);
+        setLabel("Gender: ", middleColumnX,secondRawYValue,width,labelHeight);
+        setLabel("Date: ",lastColumnX,secondRawYValue,width,labelHeight);
+
+        thirdRawYValue=secondRawYValue+labelHeight+10;
+        setLabel("Referred By: ",      firstColumnX,thirdRawYValue,width,labelHeight);
+        setLabel("Registration Date: ", middleColumnX,thirdRawYValue,width+50,labelHeight);
+        setLabel("Lab No: ",lastColumnX,thirdRawYValue,width,labelHeight);
     }
 
 
     private void getDatabase(String patientID){
-        pNameLabel = setUserDataLabel("Name ",      60  ,YvalueOfLabel,150,labelHeight);
-        pIdLabel = setUserDataLabel("Patient ID ", 420,YvalueOfLabel,150,labelHeight);
-        setUserDataLabel("DSL Marzipura",840,YvalueOfLabel,200,labelHeight);
 
-        pAgeLabel = setUserDataLabel("Age",      60,secondRawYValue,150,labelHeight);
-        pGenderLabel = setUserDataLabel("Gender ", 420,secondRawYValue,150,labelHeight);
-        pDateLabel = setUserDataLabel("Date",810,secondRawYValue,200,labelHeight);
+        int fistColumnX=140,secondColumnX=620,thirdColumnX=1060;
 
-        setUserDataLabel("DSL Marzipura ",      110,thirdRawYValue,150,labelHeight);
-        pRegDateLabel = setUserDataLabel("Registration Date ", 470,thirdRawYValue,150,labelHeight);
-        pLabNo = setUserDataLabel("Lab No ",810,thirdRawYValue,150,labelHeight);
+        pNameLabel = setUserDataLabel("Name ",      fistColumnX  ,YvalueOfLabel,150,labelHeight);
+        pIdLabel = setUserDataLabel("Patient ID ", secondColumnX,YvalueOfLabel,180,labelHeight);
+        setUserDataLabel("DSL Marzipura",thirdColumnX,YvalueOfLabel,200,labelHeight);
+
+        pAgeLabel = setUserDataLabel("Age",      fistColumnX,secondRawYValue,150,labelHeight);
+        pGenderLabel = setUserDataLabel("Gender ", secondColumnX,secondRawYValue,150,labelHeight);
+        pDateLabel = setUserDataLabel("Date",thirdColumnX-50,secondRawYValue,200,labelHeight);
+
+        setUserDataLabel("DSL Marzipura ",      fistColumnX+50,thirdRawYValue,150,labelHeight);
+        pRegDateLabel = setUserDataLabel("Registration Date ", secondColumnX+80,thirdRawYValue,200,labelHeight);
+        pLabNo = setUserDataLabel("Lab No ",thirdColumnX-50,thirdRawYValue,150,labelHeight);
 
 
         try {
@@ -182,7 +191,7 @@ public class Print extends JFrame implements Printable {
                 pDateLabel.setText(resultSet.getString("date_time"));
                 pRegDateLabel.setText(resultSet.getString("date_time"));
                 pLabNo.setText(resultSet.getString("lab_number"));
-                pTestLabel.setText(resultSet.getString("test"));
+
 
 
             }
@@ -195,12 +204,12 @@ public class Print extends JFrame implements Printable {
 
     }
 
-    private void setReportDetail(){
-
-        pTestLabel = setLabel("H. PYLORI ANTIGEN (STOOL) ICT",10,370,600,40);
-        pTestLabel.setFont(new Font("Arial",Font.BOLD,18));
-
-    }
+//    private void setReportDetail(){
+//
+//        pTestLabel = setLabel("H. PYLORI ANTIGEN (STOOL) ICT",10,370,600,40);
+//        pTestLabel.setFont(new Font("Arial",Font.BOLD,18));
+//
+//    }
 
     private void setPrintBtn() {
         JButton printBtn = new JButton("PRINT");
