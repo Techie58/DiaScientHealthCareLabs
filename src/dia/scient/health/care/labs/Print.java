@@ -2,6 +2,7 @@ package dia.scient.health.care.labs;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,15 +13,19 @@ import java.awt.print.PrinterJob;
 import java.sql.ResultSet;
 
 public class Print extends JFrame implements Printable {
-    JScrollPane scrollPane;
-    JPanel jPanel;
-    JLabel pNameLabel,pIdLabel,pAgeLabel,pGenderLabel,pDateLabel,pLabNo,pRegDateLabel,pTestLabel;
-    dbConnection databaseConnection;
+    private JScrollPane scrollPane;
+    private JPanel jPanel;
+    private JLabel pNameLabel,pIdLabel,pAgeLabel,pGenderLabel,pDateLabel,pLabNo,pRegDateLabel,pTestLabel;
+    private dbConnection databaseConnection;
+    private int YvalueOfLabel,labelHeight,secondRawYValue,thirdRawYValue;
 
     public Print(String patientID) {
+        labelHeight=30;
+        YvalueOfLabel=440;
+
         setPrintBtn();
         setFram();
-        getDatabase("2");
+        getDatabase(patientID);
     }
 
     public static void main(String[] args) {
@@ -32,13 +37,11 @@ public class Print extends JFrame implements Printable {
 
         getJPanel();
 
-        FlowLayout flowLayout=new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.LEFT);
         // JFrame settings
-        setLayout(flowLayout);
+        setLayout(null);
         setSize(1100, 600);
-//
-//        setLocation(150, 50);
+
+        setLocation(150, 50);
         setTitle("Print");
         getContentPane().setBackground(Color.WHITE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -49,7 +52,9 @@ public class Print extends JFrame implements Printable {
         // Create a JPanel with a proper layout
         jPanel = new JPanel();
         jPanel.setLayout(null);  // Using null layout for absolute positioning
-        jPanel.setPreferredSize(new Dimension(1000, 1000)); // Set preferred size to make JScrollPane work
+        jPanel.setPreferredSize(new Dimension(1240, 1754)); // Set preferred size to make JScrollPane work
+        jPanel.setBorder(new EmptyBorder(20, 50, 20, 30)); // Top, Left, Bottom, Right padding
+
         jPanel.setBackground(Color.WHITE);
 
 
@@ -74,7 +79,18 @@ public class Print extends JFrame implements Printable {
     private JLabel setLabel(String labelText,int x, int y, int width, int height){
         JLabel jLabel = new JLabel(labelText);
         jLabel.setBounds(x, y, width,height);
-        jLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        jLabel.setFont(new Font("Arial", Font.BOLD, 18));
+
+
+        jPanel.add(jLabel);
+        return jLabel;
+
+    }
+
+    private JLabel setUserDataLabel(String labelText,int x, int y, int width, int height){
+        JLabel jLabel = new JLabel(labelText);
+        jLabel.setBounds(x, y, width,height);
+        jLabel.setFont(new Font("Arial", Font.PLAIN, 18));
 
 
         jPanel.add(jLabel);
@@ -104,47 +120,56 @@ public class Print extends JFrame implements Printable {
                 + "<b>UAN: +92-304-333-3579</b>"
                 + "</html>";
 
-        setImg("assets/bg_images/splash_bg.png",2,2,750,200);
+        setImg("assets/bg_images/headerImg.png",2,202,1240,200);
 
-        JLabel foterAdressLable=setLabel(adress,760,5, 250,200);
-        foterAdressLable.setHorizontalAlignment(SwingConstants.LEFT); // Align text to left
-        foterAdressLable.setVerticalAlignment(SwingConstants.TOP);
-        jPanel.add(foterAdressLable);
 
-        setLabel("<html><hr width='1500px' size='2' color='black'></html>",10,205,1500,5);
-        setLabel("<html><hr width='1500px' size='1' color='black'></html>",10,235,1500,5);
-        setLabel("<html><hr width='1500px' size='5' color='black'></html>",10,340,1500,5);
+//        JLabel headerAddressLabel=setLabel(adress,950,205, 310,200);
+//        headerAddressLabel.setHorizontalAlignment(SwingConstants.LEFT); // Align text to left
+//        headerAddressLabel.setVerticalAlignment(SwingConstants.TOP);
+//        headerAddressLabel.setFont(new Font("Arial", Font.BOLD, 18));
+//        jPanel.add(headerAddressLabel);
+        int lineHeight=5;
+        int lineYValue=405;
+        int lineWidth=1500;
+
+        setLabel("<html><hr width='1800px' size='2' color='black'></html>",10,lineYValue,1600,lineHeight);
+        setLabel("<html><hr width='1800px' size='1' color='black'></html>",10,lineYValue+15,1500,lineHeight);
+        setLabel("<html><hr width='1800px' size='5' color='black'></html>",10,lineYValue+130,1500,lineHeight);
 
 
     }
     private void setUserDetailLabels(){
         int width=100;
-        setLabel("Name: ",      15,240,width,30);
-        setLabel("Patient ID: ", 350,240,width,30);
-        setLabel("Lab Refferal: ",750,240,width,30);
+        setLabel("Name: ",      15,YvalueOfLabel,width,labelHeight);
+        setLabel("Patient ID: ", 350,YvalueOfLabel,width,labelHeight);
+        setLabel("Lab Refferal: ",750,YvalueOfLabel,width,labelHeight);
 
-        setLabel("Age: ",      15,270,width,30);
-        setLabel("Gender: ", 350,270,width,30);
-        setLabel("Date: ",750,270,width,30);
+        secondRawYValue=YvalueOfLabel+labelHeight;
+        setLabel("Age: ",      15,secondRawYValue,width,labelHeight);
+        setLabel("Gender: ", 350,secondRawYValue,width,labelHeight);
+        setLabel("Date: ",750,secondRawYValue,width,labelHeight);
 
-        setLabel("Referred By: ",      15,300,width,30);
-        setLabel("Registration Date: ", 350,300,130,30);
-        setLabel("Lab No: ",750,300,width,30);
+        thirdRawYValue=secondRawYValue+labelHeight;
+        setLabel("Referred By: ",      15,thirdRawYValue,width,labelHeight);
+        setLabel("Registration Date: ", 350,thirdRawYValue,130,labelHeight);
+        setLabel("Lab No: ",750,thirdRawYValue,width,labelHeight);
     }
 
 
     private void getDatabase(String patientID){
-        pNameLabel = setLabel("Name ",      60  ,240,150,30);
-        pIdLabel = setLabel("Patient ID ", 420,240,150,30);
-        setLabel("DSL Marzipura",840,240,200,30);
+        pNameLabel = setUserDataLabel("Name ",      60  ,YvalueOfLabel,150,labelHeight);
+        pIdLabel = setUserDataLabel("Patient ID ", 420,YvalueOfLabel,150,labelHeight);
+        setUserDataLabel("DSL Marzipura",840,YvalueOfLabel,200,labelHeight);
 
-        pAgeLabel = setLabel("Age",      60,270,150,30);
-        pGenderLabel = setLabel("Gender ", 420,270,150,30);
-        pDateLabel = setLabel("Date",810,270,200,30);
+        pAgeLabel = setUserDataLabel("Age",      60,secondRawYValue,150,labelHeight);
+        pGenderLabel = setUserDataLabel("Gender ", 420,secondRawYValue,150,labelHeight);
+        pDateLabel = setUserDataLabel("Date",810,secondRawYValue,200,labelHeight);
 
-        setLabel("DSL Marzipura ",      110,300,150,30);
-        pRegDateLabel = setLabel("Registration Date ", 470,300,150,30);
-        pLabNo = setLabel("Lab No ",810,300,150,30);
+        setUserDataLabel("DSL Marzipura ",      110,thirdRawYValue,150,labelHeight);
+        pRegDateLabel = setUserDataLabel("Registration Date ", 470,thirdRawYValue,150,labelHeight);
+        pLabNo = setUserDataLabel("Lab No ",810,thirdRawYValue,150,labelHeight);
+
+
         try {
 
             databaseConnection = new dbConnection();
