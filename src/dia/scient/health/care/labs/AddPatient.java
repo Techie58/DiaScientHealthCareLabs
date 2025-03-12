@@ -123,7 +123,7 @@ public class AddPatient extends JFrame {
         DateTimeLable.setBorder(border);
 
 
-        currentDate=new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date());
+        currentDate=new SimpleDateFormat("dd-MM-yyyy").format(new Date());
         sysDateTimeLable=new JLabel(currentDate);
         sysDateTimeLable.setBounds(346,68,147,30);
         sysDateTimeLable.setFont(new Font("Times New Roman",Font.BOLD,18));
@@ -405,7 +405,9 @@ public class AddPatient extends JFrame {
 
 
         }
-        private void setIntRestriction(JTextField tf) {
+
+
+    private void setIntRestriction(JTextField tf) {
             tf.addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyTyped(KeyEvent e) {
@@ -423,7 +425,6 @@ public class AddPatient extends JFrame {
                 }
             });
         }
-
     private boolean setNotEmptyIntValidation(JTextField textField, JLabel jLabel) {
         if (textField.getText().trim().isEmpty()) {
             jLabel.setForeground(Color.RED);
@@ -433,9 +434,8 @@ public class AddPatient extends JFrame {
             return true; // Validation passed
         }
     }
-
-
     private boolean setNotEmptyStringValidation(JTextField textField, JLabel jLabel) {
+
         if (textField.getText().trim().isEmpty()) {
             jLabel.setForeground(Color.RED);
             return false; // Validation failed
@@ -489,6 +489,7 @@ public class AddPatient extends JFrame {
             e1.printStackTrace();
         }
     }
+
     private void printData(){
 
             try {
@@ -525,7 +526,7 @@ public class AddPatient extends JFrame {
                         "VALUES('" + labNum + "', '" + dataTime + "', '" + patientName + "', '" + gender + "', '" + age + "', '" + test + "', '" + phoneNo + "', '" + address + "', '" + remarks + "', '" + payment + "')";
 
                 db.statement.executeUpdate(saveBtnQuery);
-                new Print();
+                new Print(tfPatientID.getText().toString());
                 setVisible(false);
 
 

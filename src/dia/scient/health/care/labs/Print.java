@@ -1,6 +1,7 @@
 package dia.scient.health.care.labs;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,18 +9,22 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.sql.ResultSet;
 
 public class Print extends JFrame implements Printable {
     JScrollPane scrollPane;
     JPanel jPanel;
+    JLabel pNameLabel,pIdLabel,pAgeLabel,pGenderLabel,pDateLabel,pLabNo,pRegDateLabel,pTestLabel;
+    dbConnection databaseConnection;
 
-    public Print() {
+    public Print(String patientID) {
         setPrintBtn();
         setFram();
+        getDatabase("2");
     }
 
     public static void main(String[] args) {
-        new Print();
+        new Print("");
     }
 
     private void setFram() {
@@ -27,10 +32,13 @@ public class Print extends JFrame implements Printable {
 
         getJPanel();
 
+        FlowLayout flowLayout=new FlowLayout();
+        flowLayout.setAlignment(FlowLayout.LEFT);
         // JFrame settings
-        setLayout(null);
-        setSize(1000, 600);
-        setLocation(150, 50);
+        setLayout(flowLayout);
+        setSize(1100, 600);
+//
+//        setLocation(150, 50);
         setTitle("Print");
         getContentPane().setBackground(Color.WHITE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,12 +55,13 @@ public class Print extends JFrame implements Printable {
 
         settingHeader();
         setUserDetailLabels();
+
         setReportDetail();
 
 
         // Create a JScrollPane and add the JPanel to it
         scrollPane = new JScrollPane(jPanel);
-        scrollPane.setBounds(10, 45, 960, 500);  // Position & size of the scroll pane
+        scrollPane.setBounds(10, 45, 1060, 500);  // Position & size of the scroll pane
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
@@ -66,6 +75,8 @@ public class Print extends JFrame implements Printable {
         JLabel jLabel = new JLabel(labelText);
         jLabel.setBounds(x, y, width,height);
         jLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+
         jPanel.add(jLabel);
         return jLabel;
 
@@ -102,26 +113,68 @@ public class Print extends JFrame implements Printable {
 
         setLabel("<html><hr width='1500px' size='2' color='black'></html>",10,205,1500,5);
         setLabel("<html><hr width='1500px' size='1' color='black'></html>",10,235,1500,5);
-        setLabel("<html><hr width='1500px' size='5' color='black'></html>",10,370,1500,5);
+        setLabel("<html><hr width='1500px' size='5' color='black'></html>",10,340,1500,5);
 
 
     }
     private void setUserDetailLabels(){
-        setLabel("Name: ",      15,240,150,30);
-        setLabel("Patient ID: ", 350,240,150,30);
-        setLabel("Lab Refferal: ",750,240,200,30);
+        int width=100;
+        setLabel("Name: ",      15,240,width,30);
+        setLabel("Patient ID: ", 350,240,width,30);
+        setLabel("Lab Refferal: ",750,240,width,30);
 
-        setLabel("Age: ",      15,280,150,30);
-        setLabel("Gender: ", 350,280,150,30);
-        setLabel("Date: ",750,280,200,30);
+        setLabel("Age: ",      15,270,width,30);
+        setLabel("Gender: ", 350,270,width,30);
+        setLabel("Date: ",750,270,width,30);
 
-        setLabel("Referred By: ",      15,320,150,30);
-        setLabel("Registration Date: ", 350,320,150,30);
-        setLabel("Lab No: ",750,320,150,30);
+        setLabel("Referred By: ",      15,300,width,30);
+        setLabel("Registration Date: ", 350,300,130,30);
+        setLabel("Lab No: ",750,300,width,30);
     }
+
+
+    private void getDatabase(String patientID){
+        pNameLabel = setLabel("Name ",      60  ,240,150,30);
+        pIdLabel = setLabel("Patient ID ", 420,240,150,30);
+        setLabel("DSL Marzipura",840,240,200,30);
+
+        pAgeLabel = setLabel("Age",      60,270,150,30);
+        pGenderLabel = setLabel("Gender ", 420,270,150,30);
+        pDateLabel = setLabel("Date",810,270,200,30);
+
+        setLabel("DSL Marzipura ",      110,300,150,30);
+        pRegDateLabel = setLabel("Registration Date ", 470,300,150,30);
+        pLabNo = setLabel("Lab No ",810,300,150,30);
+        try {
+
+            databaseConnection = new dbConnection();
+            ResultSet resultSet=databaseConnection.statement.executeQuery("SELECT * FROM patient_details WHERE patient_id = '"+patientID+"' ");
+            while (resultSet.next()) {
+                pNameLabel.setText(resultSet.getString("patient_name"));
+                pIdLabel.setText(resultSet.getString("patient_id"));
+                pAgeLabel.setText(resultSet.getString("age"));
+                pGenderLabel.setText(resultSet.getString("gender"));
+                pDateLabel.setText(resultSet.getString("date_time"));
+                pRegDateLabel.setText(resultSet.getString("date_time"));
+                pLabNo.setText(resultSet.getString("lab_number"));
+                pTestLabel.setText(resultSet.getString("test"));
+
+
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,e.getMessage().toString(),"Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+
+    }
+
     private void setReportDetail(){
 
-        setLabel("H. PYLORI ANTIGEN (STOOL) ICT",10,390,600,40).setFont(new Font("Arial",Font.BOLD,18));
+        pTestLabel = setLabel("H. PYLORI ANTIGEN (STOOL) ICT",10,370,600,40);
+        pTestLabel.setFont(new Font("Arial",Font.BOLD,18));
+
     }
 
     private void setPrintBtn() {
@@ -164,6 +217,7 @@ public class Print extends JFrame implements Printable {
 
         }
     }
+
 
     @Override
     public int print(Graphics g, PageFormat pf, int pageIndex) throws PrinterException {
