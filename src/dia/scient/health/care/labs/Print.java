@@ -32,6 +32,7 @@ public class Print extends JFrame implements Printable {
     }
 
     private void setFram() {
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Make JFrame Full-Screen
 
 
         getJPanel();
@@ -51,7 +52,7 @@ public class Print extends JFrame implements Printable {
         // Create a JPanel with a proper layout
         jPanel = new JPanel();
         jPanel.setLayout(null);  // Using null layout for absolute positioning
-        jPanel.setPreferredSize(new Dimension(1240, 1754)); // Set preferred size to make JScrollPane work
+        jPanel.setPreferredSize(new Dimension(1220, 1754)); // Set preferred size to make JScrollPane work
 
         jPanel.setBackground(Color.WHITE);
 
@@ -64,7 +65,7 @@ public class Print extends JFrame implements Printable {
 
         // Create a JScrollPane and add the JPanel to it
         scrollPane = new JScrollPane(jPanel);
-        scrollPane.setBounds(10, 45, 1060, 500);  // Position & size of the scroll pane
+        scrollPane.setBounds(10, 45, 1250, 580);  // Position & size of the scroll pane
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 

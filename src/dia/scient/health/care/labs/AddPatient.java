@@ -64,7 +64,7 @@ public class AddPatient extends JFrame {
         addNewPatient.setFont(new Font("Times New Roman",Font.BOLD,35));
         add(addNewPatient);
 
-        LabNumLable=new JLabel("Lab Number");
+        LabNumLable=new JLabel("MR #");
         LabNumLable.setBounds(10,36,130,30);
         add(LabNumLable);
         LabNumLable.setBorder(border);
