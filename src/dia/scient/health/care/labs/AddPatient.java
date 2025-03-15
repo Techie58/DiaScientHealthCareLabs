@@ -175,7 +175,7 @@ public class AddPatient extends JFrame {
         add(TestLable);
         TestLable.setBorder(border);
 
-        String tests[]={"Complete blood count (CBC)","Blood lipid profile","Antinuclear antibody","Blood chemistry study","BNP testing"," Complement"," Creatinine"," C-reactive protein (CRP)"};
+        String tests[]={"COMPLETE BLOOD COUNT (CBC)","H. PYLORI ANTIGEN (STOOL) ICT","BLOOD LIPID PROFILE", "ANTINUCLEAR ANTIBODY", "BLOOD CHEMISTRY STUDY", "BNP TESTING", "COMPLEMENT", "CREATININE", "C-REACTIVE PROTEIN (CRP)"};
         cbTest=new JComboBox(tests);
         cbTest.setBounds(142,164,352,30);
         add(cbTest);

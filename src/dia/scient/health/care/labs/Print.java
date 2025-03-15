@@ -19,7 +19,7 @@ public class Print extends JFrame implements Printable {
 
     public Print(String patientID) {
         labelHeight=30;
-        YvalueOfLabel=500;
+        YvalueOfLabel=440;
 
         setPrintBtn();
         setFram();
@@ -106,31 +106,12 @@ public class Print extends JFrame implements Printable {
     }
 
     private void settingHeader(){
-        String adress="<html>"
-                + "<div style='line-height: 1.5;'>"
-                + "<b>DIA Scient Medical Complex,</b><br>"
-                + "35-G, Gulistan Colony No.1,<br>"
-                + "Near Aziz Fatima Hospital, Faisalabad.<br>"
-                + "<b>Ph:</b> +92-41-8862324-25<br>"
-                + "<b>Help Line:</b> +92-345-7664420, 30<br>"
-                + "<b>E-mail:</b> ceo@diascient.com<br>"
-                + "<b>www.diascient.com</b>"
-                + "<b>UAN: +92-304-333-3579</b>"
-                + "</html>";
-        //        JLabel headerAddressLabel=setLabel(adress,950,205, 310,200);
-//        headerAddressLabel.setHorizontalAlignment(SwingConstants.LEFT); // Align text to left
-//        headerAddressLabel.setVerticalAlignment(SwingConstants.TOP);
-//        headerAddressLabel.setFont(new Font("Arial", Font.BOLD, 18));
-//        jPanel.add(headerAddressLabel);
-//        setLabel("<html><hr width='1800px' size='2' color='black'></html>",10,lineYValue,1600,lineHeight);
 
-
-
-        setImg("assets/bg_images/headerImg1.png",70,202,1240,260);
+        setImg("assets/bg_images/headerImg1.png",70,140,1240,260);
 
 
         int lineHeight=5;
-        int lineYValue=465;
+        int lineYValue=405;
         int lineWidth=1500;
 
 
@@ -140,7 +121,7 @@ public class Print extends JFrame implements Printable {
 
     }
     private void settingFooter(){
-        setImg("assets/bg_images/footerImg.png",60,1435,1240,320);
+        setImg("assets/bg_images/footerImg.png",60,1425,1240,310);
 
     }
     private void setUserDetailLabels(){
