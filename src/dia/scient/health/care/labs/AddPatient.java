@@ -1,6 +1,5 @@
 package dia.scient.health.care.labs;
 
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -16,7 +15,7 @@ import java.util.Date;
 public class AddPatient extends JFrame {
 
     JTextField tfName,tfLabNum,tfAge,tfPatientID,tfPhoneNo,tfPayment;
-    JLabel addNewPatient,PaymentLable,LabNumLable,NameLable,AgeLable,GenderLable,PatientIDLable,TestLable,DateTimeLable,PhoneNoLable,AddressLable,Remarks,sysDateTimeLable;
+    JLabel addNewPatientLabel,PaymentLable,LabNumLable,NameLable,AgeLable,PhoneNoLable;
 
     JComboBox cbTest,cbGender;
     JTextArea taRemarks,taAddress;
@@ -24,27 +23,18 @@ public class AddPatient extends JFrame {
     JScrollPane jScrollPane;
     SQLiteDbConnection sqLiteDbConnection;
 
-    private int patientID;
-
-
-    AddPatient(){ }
 
     public static void main(String[] args) {
 
         AddPatient addPatient=new AddPatient();
 
         addPatient.setBtn("SAVE",null);
-        addPatient.setLable("Add Patient");
+        addPatient.setLabels("Add Patient");
         addPatient.setFram("Add Patient");
 
     }
 
-    public void setFram(String framTitle)
-    {
-
-
-
-
+    public void setFram(String framTitle) {
         setSize(1000,500);
         setLayout(null);
         setTitle(framTitle);
@@ -54,34 +44,19 @@ public class AddPatient extends JFrame {
 
     }
 
-    public void setLable(String headingLable){
+    public void setLabels(String headingLable){
 
-        Border border = BorderFactory.createLineBorder(Color.BLACK);
 
-        addNewPatient=new JLabel(headingLable);
-        addNewPatient.setBounds(100,0,400,40);
-        addNewPatient.setFont(new Font("Times New Roman",Font.BOLD,35));
-        add(addNewPatient);
-
-        LabNumLable=new JLabel("MR #");
-        LabNumLable.setBounds(10,36,130,30);
-        add(LabNumLable);
-        LabNumLable.setBorder(border);
-
-        tfLabNum=new JTextField();
-        tfLabNum.setBounds(142,36,352,30);
-        add(tfLabNum);
-        setIntRestriction(tfLabNum,5);
+        addNewPatientLabel = setPatientDetailLabel(headingLable,100,0,400,40);
+        addNewPatientLabel.setFont(new Font("Times New Roman",Font.BOLD,35));
+        addNewPatientLabel.setBorder(BorderFactory.createEmptyBorder());
 
 
 
+        LabNumLable= setPatientDetailLabel("MR #",10,36,130,30);
+        tfLabNum= setPatientDetailTextField(142,36,352,30,true,5);
         //Total width of Lab_Number = 495
-
-
-        PatientIDLable=new JLabel("Patient ID");
-        PatientIDLable.setBounds(10,68,130,30);
-        add(PatientIDLable);
-        PatientIDLable.setBorder(border);
+        setPatientDetailLabel("Patient ID",10,68,130,30);
 
         try {
              sqLiteDbConnection = new SQLiteDbConnection();
@@ -100,10 +75,8 @@ public class AddPatient extends JFrame {
                 sqLiteDbConnection.statement.executeUpdate("DELETE FROM sqlite_sequence WHERE name='patient_details'");
             }
 
-
-            tfPatientID = new JTextField(String.valueOf(currentID));
-            tfPatientID.setBounds(142, 68, 100, 30);
-            add(tfPatientID);
+            tfPatientID=setPatientDetailTextField(142, 68, 100, 30,false,null);
+            tfPatientID.setText(String.valueOf(currentID));
             tfPatientID.setEditable(false);
 
             resultSet.close();
@@ -118,63 +91,32 @@ public class AddPatient extends JFrame {
 
 
 
-        DateTimeLable=new JLabel("Date & Time");
-        DateTimeLable.setBounds(244,68,100,30);
-        add(DateTimeLable);
-        DateTimeLable.setBorder(border);
-
+        setPatientDetailLabel("Date",244,68,100,30);
 
         currentDate=new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-        sysDateTimeLable=new JLabel(currentDate);
-        sysDateTimeLable.setBounds(346,68,147,30);
-        sysDateTimeLable.setFont(new Font("Times New Roman",Font.BOLD,18));
-        add(sysDateTimeLable);
-        sysDateTimeLable.setBorder(border);
-
+        setPatientDetailLabel(currentDate,346,68,147,30);
 
         // Total with of the Patient ID & Date is = 495
 
 
-        NameLable=new JLabel("Patient Name");
-        NameLable.setBounds(10,100,130,30);
-        add(NameLable);
-        NameLable.setBorder(border);
+        NameLable = setPatientDetailLabel("Patient Name",10,100,130,30);
+        tfName = setPatientDetailTextField(142,100,352,30,false,null);
 
-        tfName=new JTextField();
-        tfName.setBounds(142,100,352,30);
-        add(tfName);
+          // Total WIDTH of the Patient Name is = 495
 
-
-        // Total WIDTH of the Patient Name is = 495
-
-        GenderLable=new JLabel("Gender");
-        GenderLable.setBounds(10,132,130,30);
-        add(GenderLable);
-        GenderLable.setBorder(border);
-
+        setPatientDetailLabel("Gender",10,132,130,30);
         String gender[]={"Male","Female"};
         cbGender=new JComboBox(gender);
         cbGender.setBounds(142,132,100,30);
         add(cbGender);
 
 
-        AgeLable=new JLabel("Age");
-        AgeLable.setBounds(244,132,98,30);
-        add(AgeLable);
-        AgeLable.setBorder(border);
-
-        tfAge=new JTextField();
-        tfAge.setBounds(344,132,150,30);
-        setIntRestriction(tfAge,3);
-
-        add(tfAge);
+        AgeLable = setPatientDetailLabel("Age",244,132,98,30);
+        tfAge = setPatientDetailTextField(344,132,150,30,true,3);
 
         // Total WIDTH of the Patient Age & Gender is = 495
 
-        TestLable=new JLabel("Test");
-        TestLable.setBounds(10,164,130,30);
-        add(TestLable);
-        TestLable.setBorder(border);
+        setPatientDetailLabel("Test",10,164,130,30);
 
         String tests[]={"COMPLETE BLOOD COUNT (CBC)","H. PYLORI ANTIGEN (STOOL) ICT","BLOOD LIPID PROFILE", "ANTINUCLEAR ANTIBODY", "BLOOD CHEMISTRY STUDY", "BNP TESTING", "COMPLEMENT", "CREATININE", "C-REACTIVE PROTEIN (CRP)"};
         cbTest=new JComboBox(tests);
@@ -185,23 +127,12 @@ public class AddPatient extends JFrame {
         // Total WIDTH of the Tests is = 495
 
 
-        PhoneNoLable=new JLabel("Phone No");
-        PhoneNoLable.setBounds(10,196,130,30);
-        add(PhoneNoLable);
-        PhoneNoLable.setBorder(border);
-
-        tfPhoneNo=new JTextField();
-        tfPhoneNo.setBounds(142,196,352,30);
-        add(tfPhoneNo);
-        setIntRestriction(tfPhoneNo,11);
-
+        PhoneNoLable = setPatientDetailLabel("Phone No",10,196,130,30);
+        tfPhoneNo = setPatientDetailTextField(142,196,352,30,true,11);
         // Total WIDTH of the Patient Phone No is = 495
 
 
-        AddressLable=new JLabel("Address");
-        AddressLable.setBounds(10,228,130,60);
-        add(AddressLable);
-        AddressLable.setBorder(border);
+        setPatientDetailLabel("Address",10,228,130,60);
 
         taAddress=new JTextArea(5,20);
         taAddress.setLineWrap(true); // Wrap text
@@ -217,10 +148,7 @@ public class AddPatient extends JFrame {
         // Total WIDTH of the Patient Address is = 495
 
 
-        Remarks=new JLabel("Remarks");
-        Remarks.setBounds(10,290,130,60);
-        add(Remarks);
-        Remarks.setBorder(border);
+        setPatientDetailLabel("Remarks",10,290,130,60);
 
         taRemarks=new JTextArea(5,20);
         taRemarks.setLineWrap(true); // Wrap text
@@ -232,22 +160,9 @@ public class AddPatient extends JFrame {
         // Total WIDTH of the Patient Remarks is = 495
 
 
-        PaymentLable=new JLabel("Payment");
-        PaymentLable.setBounds(10,352,130,30);
-        add(PaymentLable);
-        PaymentLable.setBorder(border);
+        PaymentLable = setPatientDetailLabel("Payment",10,352,130,30);
 
-
-
-        tfPayment=new JTextField();
-        tfPayment.setBounds(142,352,352,30);
-        setIntRestriction(tfPayment,6);
-        add(tfPayment);
-
-
-
-
-
+        tfPayment = setPatientDetailTextField(142,352,352,30,true,6);
 
     }
 
@@ -419,7 +334,51 @@ public class AddPatient extends JFrame {
 
 
         }
+    private void printData(){
 
+        try {
+            // Validate Required Fields
+            boolean isValid = true;
+            isValid &= setNotEmptyIntValidation(tfLabNum, LabNumLable);
+            isValid &= setNotEmptyStringValidation(tfName, NameLable);
+            isValid &= setNotEmptyIntValidation(tfAge, AgeLable);
+            isValid &= setNotEmptyIntValidation(tfPayment, PaymentLable);
+            isValid &= setNotEmptyStringValidation(tfPhoneNo, PhoneNoLable);
+
+            if (!isValid) {
+                JOptionPane.showMessageDialog(null, "Please fill all the required fields!", "Missing Details", JOptionPane.ERROR_MESSAGE);
+                return; // Stop execution if validation fails
+            }
+
+            // Extracting Data
+            String dataTime = currentDate;
+            String patientName = tfName.getText();
+            String gender = cbGender.getSelectedItem().toString();
+            String test = cbTest.getSelectedItem().toString();
+            String address = taAddress.getText();
+            String remarks = taRemarks.getText();
+            if (remarks.isEmpty()) remarks = "";
+
+            int labNum = Integer.parseInt(tfLabNum.getText());
+            int age = Integer.parseInt(tfAge.getText());
+            String phoneNo = tfPhoneNo.getText();
+            int payment = Integer.parseInt(tfPayment.getText());
+
+            // Database Insertion
+            sqLiteDbConnection = new SQLiteDbConnection();
+            String saveBtnQuery = "INSERT INTO patient_details(lab_number, date_time, patient_name, gender, age, test, phone_no, address, remarks, payment) " +
+                    "VALUES('" + labNum + "', '" + dataTime + "', '" + patientName + "', '" + gender + "', '" + age + "', '" + test + "', '" + phoneNo + "', '" + address + "', '" + remarks + "', '" + payment + "')";
+
+            sqLiteDbConnection.statement.executeUpdate(saveBtnQuery);
+            new Print(tfPatientID.getText().toString());
+            setVisible(false);
+
+
+        } catch (Exception e1) {
+            JOptionPane.showMessageDialog(null, "Error saving patient details.", "Error", JOptionPane.ERROR_MESSAGE);
+            e1.printStackTrace();
+        }
+    }
 
     private void setIntRestriction(JTextField tf, int maxLength) {
         tf.addKeyListener(new KeyAdapter() {
@@ -512,52 +471,26 @@ public class AddPatient extends JFrame {
             e1.printStackTrace();
         }
     }
+    private JLabel setPatientDetailLabel(String title,int x,int y,int width,int height){
+        Border border = BorderFactory.createLineBorder(Color.BLACK);
 
-    private void printData(){
+        JLabel lable=new JLabel(title);
+        lable.setBounds(x,y,width,height);
+        lable.setBorder(border);
+        add(lable);
+        return lable;
+  }
+    private JTextField setPatientDetailTextField(int x, int y, int width, int height, boolean intRestriction, Integer RestrictionLimit) {
+        JTextField textField = new JTextField();
+        textField.setBounds(x, y, width, height);
+        add(textField);
 
-            try {
-                // Validate Required Fields
-                boolean isValid = true;
-                isValid &= setNotEmptyIntValidation(tfLabNum, LabNumLable);
-                isValid &= setNotEmptyStringValidation(tfName, NameLable);
-                isValid &= setNotEmptyIntValidation(tfAge, AgeLable);
-                isValid &= setNotEmptyIntValidation(tfPayment, PaymentLable);
-                isValid &= setNotEmptyStringValidation(tfPhoneNo, PhoneNoLable);
-
-                if (!isValid) {
-                    JOptionPane.showMessageDialog(null, "Please fill all the required fields!", "Missing Details", JOptionPane.ERROR_MESSAGE);
-                    return; // Stop execution if validation fails
-                }
-
-                // Extracting Data
-                String dataTime = currentDate;
-                String patientName = tfName.getText();
-                String gender = cbGender.getSelectedItem().toString();
-                String test = cbTest.getSelectedItem().toString();
-                String address = taAddress.getText();
-                String remarks = taRemarks.getText();
-                if (remarks.isEmpty()) remarks = "";
-
-                int labNum = Integer.parseInt(tfLabNum.getText());
-                int age = Integer.parseInt(tfAge.getText());
-                String phoneNo = tfPhoneNo.getText();
-                int payment = Integer.parseInt(tfPayment.getText());
-
-                // Database Insertion
-                sqLiteDbConnection = new SQLiteDbConnection();
-                String saveBtnQuery = "INSERT INTO patient_details(lab_number, date_time, patient_name, gender, age, test, phone_no, address, remarks, payment) " +
-                        "VALUES('" + labNum + "', '" + dataTime + "', '" + patientName + "', '" + gender + "', '" + age + "', '" + test + "', '" + phoneNo + "', '" + address + "', '" + remarks + "', '" + payment + "')";
-
-                sqLiteDbConnection.statement.executeUpdate(saveBtnQuery);
-                new Print(tfPatientID.getText().toString());
-                setVisible(false);
-
-
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(null, "Error saving patient details.", "Error", JOptionPane.ERROR_MESSAGE);
-                e1.printStackTrace();
-            }
+        if (intRestriction && RestrictionLimit != null) {
+            setIntRestriction(textField, RestrictionLimit);
         }
+        return textField;
+    }
+
     }
 
 

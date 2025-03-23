@@ -37,7 +37,7 @@ public class Splash extends JFrame {
 
     public void setFram(){
 
-        setSize(1120,600);
+                setSize(1120,600);
         setLayout(null);
         setVisible(true);
         setLocation(150,50);

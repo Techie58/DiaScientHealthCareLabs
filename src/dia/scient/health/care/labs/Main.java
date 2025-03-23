@@ -55,7 +55,7 @@ public class Main extends JFrame {
                 new AddPatient();
                 AddPatient addPatient=new AddPatient();
                 addPatient.setBtn("SAVE",null);
-                addPatient.setLable("Add Patient Details");
+                addPatient.setLabels("Add Patient Details");
                 addPatient.setFram("Add Patient");
                 setVisible(false);
             }

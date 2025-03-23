@@ -8,7 +8,7 @@ public class UpdatePatient extends JFrame {
 
     UpdatePatient(String  searchChoice) {
 
-        aPatient.setLable("UPDATE PATIENT");
+        aPatient.setLabels("UPDATE PATIENT");
         aPatient.setBtn("UPDATE",Integer.parseInt(searchChoice));
 
         aPatient.setFram("Update Patient");

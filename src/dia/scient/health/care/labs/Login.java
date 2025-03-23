@@ -80,20 +80,16 @@ public class Login extends JFrame implements ActionListener {
 
         JLabel userNameLable=new JLabel("Username");
         userNameLable.setBounds(40,20,100,30);
-//        userNameLable.setForeground(Color.white);
         add(userNameLable);
 
         //Text Fied of userName
         userNameTF=new JTextField();
         userNameTF.setBounds(150,20,200 ,20);
-//        userNameTF.setForeground(Color.white);
         add(userNameTF);
 
 
         JLabel passwordLable=new JLabel("Password");
         passwordLable.setBounds(40,50,100,30);
-//        passwordLable.setForeground(Color.white);
-
         add(passwordLable);
 
         //Text Fied for Password
