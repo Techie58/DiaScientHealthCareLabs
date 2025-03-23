@@ -14,7 +14,7 @@ public class Print extends JFrame implements Printable {
     private JScrollPane scrollPane;
     private JPanel jPanel;
     private JLabel pNameLabel,pIdLabel,pAgeLabel,pGenderLabel,pDateLabel,pLabNo,pRegDateLabel;
-    private dbConnection databaseConnection;
+    private SQLiteDbConnection databaseConnection;
     private int YvalueOfLabel,labelHeight,secondRawYValue,thirdRawYValue;
 
     public Print(String patientID) {
@@ -163,7 +163,7 @@ public class Print extends JFrame implements Printable {
 
         try {
 
-            databaseConnection = new dbConnection();
+            databaseConnection = new SQLiteDbConnection();
             ResultSet resultSet=databaseConnection.statement.executeQuery("SELECT * FROM patient_details WHERE patient_id = '"+patientID+"' ");
             while (resultSet.next()) {
                 pNameLabel.setText(resultSet.getString("patient_name"));

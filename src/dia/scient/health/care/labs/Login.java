@@ -4,15 +4,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLData;
+
 
 public class Login extends JFrame implements ActionListener {
 
     JTextField userNameTF;
     JPasswordField passwordTF;
     JButton loginBtn,backBtn;
+    SQLiteDbConnection sqLiteDbConnection;
 
 
 
@@ -31,8 +31,8 @@ public class Login extends JFrame implements ActionListener {
                 String loginPassword = passwordTF.getText();
                 String query="SELECT * FROM login WHERE username = '"+loginUserName+"' and password = '"+loginPassword+"'";
 
-                dbConnection dbConnection=new dbConnection();
-                ResultSet resultSet= dbConnection.statement.executeQuery(query);
+                sqLiteDbConnection=new SQLiteDbConnection();
+                ResultSet resultSet= sqLiteDbConnection.statement.executeQuery(query);
                 if (resultSet.next()){
 
                     setVisible(false);
@@ -41,6 +41,8 @@ public class Login extends JFrame implements ActionListener {
                 }else{
                     JOptionPane.showMessageDialog(null,"Invalid username or password");
                 }
+                sqLiteDbConnection.connection.close();
+                resultSet.close();
 
             }catch (Exception exception){
                 exception.printStackTrace();

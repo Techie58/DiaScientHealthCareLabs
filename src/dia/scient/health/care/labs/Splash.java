@@ -8,11 +8,12 @@ public class Splash extends JFrame {
 
     Splash (){
 
+        new SQLiteDbConnection();
 
         setBgPic();
         setFram();
         try {
-            Thread.sleep(4000);
+            Thread.sleep(2000);
             setVisible(false);
             new Login();
 

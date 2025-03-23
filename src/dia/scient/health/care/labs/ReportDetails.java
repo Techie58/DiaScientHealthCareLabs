@@ -16,7 +16,7 @@ public class ReportDetails {
 
         try {
 
-            dbConnection databaseConnection = new dbConnection();
+            SQLiteDbConnection databaseConnection = new SQLiteDbConnection();
             ResultSet resultSet=databaseConnection.statement.executeQuery("SELECT * FROM patient_details WHERE patient_id = '"+patientID+"' ");
             while (resultSet.next()) {
                 String reportTitle = resultSet.getString("test");

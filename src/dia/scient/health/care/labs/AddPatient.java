@@ -1,6 +1,5 @@
 package dia.scient.health.care.labs;
 
-import com.mysql.cj.protocol.Resultset;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -9,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.sql.Array;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,6 +22,7 @@ public class AddPatient extends JFrame {
     JTextArea taRemarks,taAddress;
     String currentDate;
     JScrollPane jScrollPane;
+    SQLiteDbConnection sqLiteDbConnection;
 
     private int patientID;
 
@@ -31,7 +31,6 @@ public class AddPatient extends JFrame {
 
     public static void main(String[] args) {
 
-        new AddPatient();
         AddPatient addPatient=new AddPatient();
 
         addPatient.setBtn("SAVE",null);
@@ -72,7 +71,7 @@ public class AddPatient extends JFrame {
         tfLabNum=new JTextField();
         tfLabNum.setBounds(142,36,352,30);
         add(tfLabNum);
-        setIntRestriction(tfLabNum);
+        setIntRestriction(tfLabNum,5);
 
 
 
@@ -85,28 +84,30 @@ public class AddPatient extends JFrame {
         PatientIDLable.setBorder(border);
 
         try {
-            dbConnection dbConnection = new dbConnection();
+             sqLiteDbConnection = new SQLiteDbConnection();
 
-            // Check if the table is empty
-            ResultSet resultSet = dbConnection.statement.executeQuery("SELECT COUNT(*) AS count FROM patient_details");
-
+            ResultSet resultSet = sqLiteDbConnection.statement.executeQuery("SELECT COUNT(*) AS count FROM patient_details");
             int currentID = 1; // Default ID
 
             if (resultSet.next() && resultSet.getInt("count") > 0) {
                 // Get the last used ID
-                ResultSet rsMax = dbConnection.statement.executeQuery("SELECT MAX(patient_id) AS max_id FROM patient_details");
+                ResultSet rsMax = sqLiteDbConnection.statement.executeQuery("SELECT MAX(patient_id) AS max_id FROM patient_details");
                 if (rsMax.next()) {
                     currentID = rsMax.getInt("max_id") + 1;
                 }
             } else {
-                // Reset AUTO_INCREMENT when the table is empty
-                dbConnection.statement.executeUpdate("ALTER TABLE patient_details AUTO_INCREMENT = 1");
+                // Reset patient_id in SQLite when table is empty
+                sqLiteDbConnection.statement.executeUpdate("DELETE FROM sqlite_sequence WHERE name='patient_details'");
             }
+
 
             tfPatientID = new JTextField(String.valueOf(currentID));
             tfPatientID.setBounds(142, 68, 100, 30);
             add(tfPatientID);
             tfPatientID.setEditable(false);
+
+            resultSet.close();
+            sqLiteDbConnection.connection.close();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -164,7 +165,7 @@ public class AddPatient extends JFrame {
 
         tfAge=new JTextField();
         tfAge.setBounds(344,132,150,30);
-        setIntRestriction(tfAge);
+        setIntRestriction(tfAge,3);
 
         add(tfAge);
 
@@ -192,7 +193,7 @@ public class AddPatient extends JFrame {
         tfPhoneNo=new JTextField();
         tfPhoneNo.setBounds(142,196,352,30);
         add(tfPhoneNo);
-        setIntRestriction(tfPhoneNo);
+        setIntRestriction(tfPhoneNo,11);
 
         // Total WIDTH of the Patient Phone No is = 495
 
@@ -240,7 +241,7 @@ public class AddPatient extends JFrame {
 
         tfPayment=new JTextField();
         tfPayment.setBounds(142,352,352,30);
-        setIntRestriction(tfPayment);
+        setIntRestriction(tfPayment,6);
         add(tfPayment);
 
 
@@ -304,9 +305,13 @@ public class AddPatient extends JFrame {
 //            Setting Existing Data into the Fields
             try {
 
-                dbConnection db=new dbConnection();
-                String query="SELECT * FROM patient_details where patient_id = '"+patientID+"'";
-                ResultSet resultset = db.statement.executeQuery(query);
+                sqLiteDbConnection = new SQLiteDbConnection();
+                String query = "SELECT * FROM patient_details WHERE patient_id = ?";
+
+                PreparedStatement stmt = sqLiteDbConnection.connection.prepareStatement(query);
+                stmt.setInt(1, patientID);
+
+                ResultSet resultset = stmt.executeQuery();
                 while (resultset.next()){
 
                     tfLabNum.setText(Integer.toString(resultset.getInt("lab_number")));
@@ -320,7 +325,12 @@ public class AddPatient extends JFrame {
                     cbGender.setSelectedItem(resultset.getString("gender"));
                     cbTest.setSelectedItem(resultset.getString("test"));
 
-                }}catch (Exception e){
+                }
+                // Close resources
+                resultset.close();
+                stmt.close();
+                sqLiteDbConnection.connection.close(); // Close connection
+            }catch (Exception e){
                 e.printStackTrace();
             }
 
@@ -336,10 +346,13 @@ public class AddPatient extends JFrame {
                 public void actionPerformed(ActionEvent e) {
                     try {
 
-
+                        // Close old connection before opening a new one
+                        if (sqLiteDbConnection != null && !sqLiteDbConnection.connection.isClosed()) {
+                            sqLiteDbConnection.connection.close();
+                        }
 //                    Establishing Connection with Database
 
-                        dbConnection db=new dbConnection();
+                        sqLiteDbConnection=new SQLiteDbConnection();
                         String dataTime,patientName,gender,test,address,remarks,phoneNo;
                         int labNum,patientID,age,payment;
 
@@ -373,7 +386,8 @@ public class AddPatient extends JFrame {
                                 "payment = '" + payment + "' " +
                                 "WHERE patient_id = '" + patientID + "'";
 
-                        db.statement.executeUpdate(updateBtnQuery);
+                        sqLiteDbConnection.statement.executeUpdate(updateBtnQuery);
+
 
 
                         JOptionPane.showMessageDialog(null,"Patient Details is Updated");
@@ -407,24 +421,20 @@ public class AddPatient extends JFrame {
         }
 
 
-    private void setIntRestriction(JTextField tf) {
-            tf.addKeyListener(new KeyAdapter() {
-                @Override
-                public void keyTyped(KeyEvent e) {
-                    char c = e.getKeyChar();
-
-                    // Allow only digits, backspace, and delete
-                    if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE && c != KeyEvent.VK_DELETE) {
-                        e.consume(); // Ignore the key event
-                    }
-
-                    // Limit input length to 11 characters
-                    if (tf.getText().length() >= 11) {
-                        e.consume();
-                    }
+    private void setIntRestriction(JTextField tf, int maxLength) {
+        tf.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE && c != KeyEvent.VK_DELETE) {
+                    e.consume();
                 }
-            });
-        }
+                if (tf.getText().length() >= maxLength) {
+                    e.consume();
+                }
+            }
+        });
+    }
     private boolean setNotEmptyIntValidation(JTextField textField, JLabel jLabel) {
         if (textField.getText().trim().isEmpty()) {
             jLabel.setForeground(Color.RED);
@@ -475,11 +485,24 @@ public class AddPatient extends JFrame {
             int payment = Integer.parseInt(tfPayment.getText());
 
             // Database Insertion
-            dbConnection db = new dbConnection();
-            String saveBtnQuery = "INSERT INTO patient_details(lab_number, date_time, patient_name, gender, age, test, phone_no, address, remarks, payment) " +
-                    "VALUES('" + labNum + "', '" + dataTime + "', '" + patientName + "', '" + gender + "', '" + age + "', '" + test + "', '" + phoneNo + "', '" + address + "', '" + remarks + "', '" + payment + "')";
+            sqLiteDbConnection= new SQLiteDbConnection();
+            String query = "INSERT INTO patient_details (lab_number, date_time, patient_name, gender, age, test, phone_no, address, remarks, payment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement stmt = sqLiteDbConnection.connection.prepareStatement(query)) {
+                stmt.setInt(1, labNum);
+                stmt.setString(2, dataTime);
+                stmt.setString(3, patientName);
+                stmt.setString(4, gender);
+                stmt.setInt(5, age);
+                stmt.setString(6, test);
+                stmt.setString(7, phoneNo);
+                stmt.setString(8, address);
+                stmt.setString(9, remarks);
+                stmt.setInt(10, payment);
+                stmt.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-            db.statement.executeUpdate(saveBtnQuery);
             JOptionPane.showMessageDialog(null, "Patient Details Saved");
             setVisible(false);
             new Main();
@@ -521,11 +544,11 @@ public class AddPatient extends JFrame {
                 int payment = Integer.parseInt(tfPayment.getText());
 
                 // Database Insertion
-                dbConnection db = new dbConnection();
+                sqLiteDbConnection = new SQLiteDbConnection();
                 String saveBtnQuery = "INSERT INTO patient_details(lab_number, date_time, patient_name, gender, age, test, phone_no, address, remarks, payment) " +
                         "VALUES('" + labNum + "', '" + dataTime + "', '" + patientName + "', '" + gender + "', '" + age + "', '" + test + "', '" + phoneNo + "', '" + address + "', '" + remarks + "', '" + payment + "')";
 
-                db.statement.executeUpdate(saveBtnQuery);
+                sqLiteDbConnection.statement.executeUpdate(saveBtnQuery);
                 new Print(tfPatientID.getText().toString());
                 setVisible(false);
 

@@ -12,11 +12,11 @@ public class RemovePatient extends JFrame implements ActionListener {
 
     private Choice patientIDChoice;
     private JLabel labNoLabel, patientNameLabel, genderLabel, testLabel;
-    private dbConnection db;  // Use a single database connection instance
+    private SQLiteDbConnection db;  // Use a single database connection instance
     private JButton deleteBtn, backBtn;
 
     RemovePatient() {
-        db = new dbConnection();  // Initialize DB connection
+        db = new SQLiteDbConnection();  // Initialize DB connection
         setFrame();
         getData();
     }

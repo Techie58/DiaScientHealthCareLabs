@@ -15,6 +15,7 @@ public class ViewPatient extends JFrame implements ActionListener {
     Choice searchChoice;
     JTable jTable;
     JButton searchBtn,printBtn,updateBtn,backBtn,printReportBtn;
+    SQLiteDbConnection sqLiteDbConnection;
 
     ViewPatient(){
 
@@ -58,8 +59,8 @@ public class ViewPatient extends JFrame implements ActionListener {
         setBtn();
 
         try {
-            dbConnection dbConnection = new dbConnection();
-            ResultSet resultSet = dbConnection.statement.executeQuery("SELECT * FROM patient_details");
+            sqLiteDbConnection = new SQLiteDbConnection();
+            ResultSet resultSet = sqLiteDbConnection.statement.executeQuery("SELECT * FROM patient_details");
 
             while (resultSet.next()) {
                 searchChoice.add(resultSet.getString("patient_id"));
@@ -76,8 +77,8 @@ public class ViewPatient extends JFrame implements ActionListener {
         add(jScrollPane);
 
         try {
-            dbConnection dbConnection = new dbConnection();
-            ResultSet resultSet = dbConnection.statement.executeQuery("SELECT * FROM patient_details");
+            sqLiteDbConnection = new SQLiteDbConnection();
+            ResultSet resultSet = sqLiteDbConnection.statement.executeQuery("SELECT * FROM patient_details");
             jTable.setModel(DbUtils.resultSetToTableModel(resultSet));
             jTable.setBackground(Color.WHITE);
 
@@ -135,8 +136,8 @@ public class ViewPatient extends JFrame implements ActionListener {
 
         if(e.getSource()==searchBtn){
             try {
-                dbConnection dbConnection=new dbConnection();
-                ResultSet resultSet=dbConnection.statement.executeQuery("SELECT * FROM patient_details WHERE patient_id = '"+searchChoice.getSelectedItem()+"'");
+                sqLiteDbConnection =new SQLiteDbConnection();
+                ResultSet resultSet=sqLiteDbConnection.statement.executeQuery("SELECT * FROM patient_details WHERE patient_id = '"+searchChoice.getSelectedItem()+"'");
                 jTable.setModel(DbUtils.resultSetToTableModel(resultSet));
 
             }catch (Exception exception){
